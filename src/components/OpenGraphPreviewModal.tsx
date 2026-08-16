@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Poem } from '../types';
 import { Logo } from './Logo';
 import { X, Share2, Check, ExternalLink } from 'lucide-react';
-import { getSiteBaseUrl } from '../utils/url';
+import { getSiteBaseUrl, buildPoemShareUrl } from '../utils/url';
 
 interface OpenGraphPreviewModalProps {
   poem: Poem;
@@ -12,9 +12,10 @@ interface OpenGraphPreviewModalProps {
 export const OpenGraphPreviewModal: React.FC<OpenGraphPreviewModalProps> = ({ poem, onClose }) => {
   const [copied, setCopied] = useState(false);
 
+  const shareUrl = buildPoemShareUrl(poem.slug);
+
   const handleCopyLink = () => {
-    const url = `${window.location.origin}/poemes/${poem.slug}`;
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -80,8 +81,11 @@ export const OpenGraphPreviewModal: React.FC<OpenGraphPreviewModalProps> = ({ po
 
         {/* Modal Actions */}
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-paper-border/60 dark:border-darkpaper-border/60">
-          <div className="text-xs text-paper-muted dark:text-darkpaper-muted">
-            URL : <code className="bg-paper-card dark:bg-darkpaper-bg px-2 py-1 rounded text-paper-ink dark:text-darkpaper-ink">https://mv-poesie.com/p/{poem.slug}</code>
+          <div className="text-xs text-paper-muted dark:text-darkpaper-muted flex items-center gap-1.5 font-mono">
+            <span>URL :</span>
+            <code className="bg-paper-card dark:bg-darkpaper-bg px-2.5 py-1 rounded text-paper-ink dark:text-darkpaper-ink select-all">
+              {shareUrl}
+            </code>
           </div>
 
           <div className="flex items-center gap-2">
