@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  /* Sand grain texture overlay (Texture Grains de Sable) across entire site */
+  /* Sand grain texture overlay across entire site */
   .bg-paper-grain {
     background-color: #F7F4EE;
     background-image: 
@@ -27,7 +27,7 @@
     background-blend-mode: screen;
   }
 
-  /* Paper sheet sand grain texture effect for liseuse and cards */
+  /* Paper sheet sand grain texture effect */
   .paper-sheet {
     background: linear-gradient(180deg, #FDFBF7 0%, #F6F2EA 100%);
     background-image: 
@@ -51,6 +51,59 @@
     box-shadow: 
       0 1px 3px rgba(0, 0, 0, 0.3),
       0 14px 36px -4px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Authentic Antique Parchment Scroll Effect (Rouleau de Parchemin Antique) */
+  .parchment-scroll {
+    background: linear-gradient(180deg, #F9F3E6 0%, #F5ECDB 20%, #F7EFE2 50%, #F3E9D7 80%, #EDE0C8 100%);
+    background-image: 
+      radial-gradient(#8c5a4c 0.4px, transparent 0.4px),
+      radial-gradient(#b8977e 0.4px, transparent 0.4px),
+      radial-gradient(#594337 0.3px, transparent 0.3px);
+    background-size: 14px 14px, 22px 22px, 9px 9px;
+    background-position: 0 0, 7px 7px, 3px 4px;
+    box-shadow: 
+      inset 0 22px 30px -12px rgba(120, 80, 50, 0.22),
+      inset 0 -22px 30px -12px rgba(120, 80, 50, 0.22),
+      inset 18px 0 24px -12px rgba(120, 80, 50, 0.12),
+      inset -18px 0 24px -12px rgba(120, 80, 50, 0.12),
+      0 20px 50px -10px rgba(44, 30, 20, 0.25);
+    border-left: 1px solid rgba(184, 151, 126, 0.4);
+    border-right: 1px solid rgba(184, 151, 126, 0.4);
+  }
+
+  .dark .parchment-scroll {
+    background: linear-gradient(180deg, #2B2520 0%, #231E19 20%, #26211C 50%, #211C18 80%, #1B1713 100%);
+    background-image: 
+      radial-gradient(#c29b82 0.4px, transparent 0.4px),
+      radial-gradient(#8c5a4c 0.4px, transparent 0.4px);
+    background-size: 14px 14px, 22px 22px;
+    background-position: 0 0, 7px 7px;
+    box-shadow: 
+      inset 0 24px 35px -12px rgba(0, 0, 0, 0.7),
+      inset 0 -24px 35px -12px rgba(0, 0, 0, 0.7),
+      inset 18px 0 24px -12px rgba(0, 0, 0, 0.5),
+      inset -18px 0 24px -12px rgba(0, 0, 0, 0.5),
+      0 25px 60px -12px rgba(0, 0, 0, 0.75);
+    border-left: 1px solid rgba(140, 90, 76, 0.3);
+    border-right: 1px solid rgba(140, 90, 76, 0.3);
+  }
+
+  /* Wooden Antique Scroll Rollers (Rouleaux en bois sculpté & laiton) */
+  .parchment-roller-top {
+    background: linear-gradient(90deg, #3A2312 0%, #684323 15%, #926038 45%, #B47A49 50%, #926038 55%, #684323 85%, #3A2312 100%);
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.35),
+      inset 0 1px 2px rgba(255, 230, 180, 0.4),
+      inset 0 -1px 2px rgba(0, 0, 0, 0.6);
+  }
+
+  .parchment-roller-bottom {
+    background: linear-gradient(90deg, #3A2312 0%, #684323 15%, #926038 45%, #B47A49 50%, #926038 55%, #684323 85%, #3A2312 100%);
+    box-shadow: 
+      0 -4px 12px rgba(0, 0, 0, 0.35),
+      inset 0 1px 2px rgba(255, 230, 180, 0.4),
+      inset 0 -1px 2px rgba(0, 0, 0, 0.6);
   }
 
   /* Sand card texture */
