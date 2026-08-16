@@ -119,10 +119,12 @@ export function App() {
         contenu: newPoem.contenu,
         extrait: newPoem.extrait,
         statut: dbStatut,
+        publie_le: new Date().toISOString(),
         date_programmation: newPoem.dateProgrammation,
         audio_url: newPoem.audioUrl,
         illustration_url: newPoem.illustration
       } as any);
+      loadPoems();
     } catch (err) {
       console.warn('Erreur synchro création Supabase:', err);
     }
@@ -138,10 +140,12 @@ export function App() {
         contenu: updatedPoem.contenu,
         extrait: updatedPoem.extrait,
         statut: dbStatut,
+        publie_le: new Date().toISOString(),
         date_programmation: updatedPoem.dateProgrammation,
         audio_url: updatedPoem.audioUrl,
         illustration_url: updatedPoem.illustration
       } as any);
+      loadPoems();
     } catch (err) {
       console.warn('Erreur synchro mise à jour Supabase:', err);
     }

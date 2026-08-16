@@ -1,5 +1,5 @@
 -- ============================================================
--- SQL Migration : Publication Programmée & Signature MV (Fix 2)
+-- SQL Migration : Publication Programmée & Signature MV (Fix Robustesse)
 -- ============================================================
 
 -- 1. Mettre à jour la contrainte des statuts sur la table 'poemes'
@@ -10,7 +10,7 @@ ALTER TABLE poemes ADD CONSTRAINT poemes_statut_check
 -- 2. Ajouter la colonne date_programmation si absente
 ALTER TABLE poemes ADD COLUMN IF NOT EXISTS date_programmation TIMESTAMP WITH TIME ZONE;
 
--- 3. Re-créer proprement la vue des poèmes publiés (DROP préalable requis par PostgreSQL)
+-- 3. Re-créer proprement la vue des poèmes publiés
 DROP VIEW IF EXISTS poemes_publies CASCADE;
 
 CREATE VIEW poemes_publies AS
@@ -22,7 +22,7 @@ SELECT
     p.extrait,
     p.meta_description,
     p.date_ecriture,
-    COALESCE(p.date_programmation, p.publie_le, p.created_at) AS publie_le,
+    COALESCE(p.publie_le, p.date_programmation, p.created_at) AS publie_le,
     p.statut,
     p.collection_id,
     c.titre AS collection_titre,
@@ -41,5 +41,5 @@ SELECT
     p.updated_at
 FROM poemes p
 LEFT JOIN collections c ON p.collection_id = c.id
-WHERE (p.statut = 'publie' AND p.publie_le <= NOW())
-   OR (p.statut = 'programme' AND COALESCE(p.date_programmation, p.publie_le) <= NOW());
+WHERE (p.statut = 'publie' AND COALESCE(p.publie_le, p.created_at) <= NOW())
+   OR (p.statut = 'programme' AND COALESCE(p.date_programmation, p.publie_le, p.created_at) <= NOW());
