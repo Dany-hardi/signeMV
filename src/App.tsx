@@ -17,6 +17,7 @@ import { NewsletterInfoModal } from './components/NewsletterInfoModal';
 import { WelcomeModal } from './components/WelcomeModal';
 import { PoemesService, SignetsService, getLecteurToken } from './services/db';
 import { mapPoemeToPoem, mapStatutToDb } from './utils/mapper';
+import { initGoogleAnalytics, trackPageView } from './utils/analytics';
 
 export function App() {
   const [poems, setPoems] = useState<Poem[]>(INITIAL_POEMS);
@@ -37,6 +38,16 @@ export function App() {
 
   // Saved / Bookmarked & Liked poems state
   const [savedPoemIds, setSavedPoemIds] = useState<string[]>([]);
+
+  // Initialiser Google Analytics au chargement
+  useEffect(() => {
+    initGoogleAnalytics();
+  }, []);
+
+  // Suivi du changement de page dans Google Analytics
+  useEffect(() => {
+    trackPageView(activePage === 'poem-detail' ? `/poeme/${selectedPoem?.slug || ''}` : `/${activePage}`);
+  }, [activePage, selectedPoem]);
 
   // Show Welcome modal on initial visit
   useEffect(() => {
