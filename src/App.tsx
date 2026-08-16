@@ -16,7 +16,7 @@ import { AdminAuthModal } from './components/AdminAuthModal';
 import { NewsletterInfoModal } from './components/NewsletterInfoModal';
 import { WelcomeModal } from './components/WelcomeModal';
 import { PoemesService, SignetsService, getLecteurToken } from './services/db';
-import { mapPoemeToPoem } from './utils/mapper';
+import { mapPoemeToPoem, mapStatutToDb } from './utils/mapper';
 
 export function App() {
   const [poems, setPoems] = useState<Poem[]>(INITIAL_POEMS);
@@ -30,7 +30,9 @@ export function App() {
   const [isNewsletterInfoOpen, setIsNewsletterInfoOpen] = useState<boolean>(false);
   const [isBookmarksOpen, setIsBookmarksOpen] = useState<boolean>(false);
   const [isAdminAuthOpen, setIsAdminAuthOpen] = useState<boolean>(false);
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(() => {
+    return localStorage.getItem('signemv_admin_session') === 'true';
+  });
   const [isWelcomeOpen, setIsWelcomeOpen] = useState<boolean>(false);
 
   // Saved / Bookmarked & Liked poems state
@@ -107,19 +109,53 @@ export function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleAddPoem = (newPoem: Poem) => {
+  const handleAddPoem = async (newPoem: Poem) => {
     setPoems(prev => [newPoem, ...prev]);
-    loadPoems();
+    try {
+      const dbStatut = mapStatutToDb(newPoem.statut);
+      await PoemesService.create({
+        slug: newPoem.slug,
+        titre: newPoem.titre,
+        contenu: newPoem.contenu,
+        extrait: newPoem.extrait,
+        statut: dbStatut,
+        date_programmation: newPoem.dateProgrammation,
+        audio_url: newPoem.audioUrl,
+        illustration_url: newPoem.illustration
+      } as any);
+    } catch (err) {
+      console.warn('Erreur synchro création Supabase:', err);
+    }
   };
 
-  const handleUpdatePoem = (updatedPoem: Poem) => {
+  const handleUpdatePoem = async (updatedPoem: Poem) => {
     setPoems(prev => prev.map(p => p.id === updatedPoem.id ? updatedPoem : p));
-    loadPoems();
+    try {
+      const dbStatut = mapStatutToDb(updatedPoem.statut);
+      await PoemesService.update(updatedPoem.id, {
+        slug: updatedPoem.slug,
+        titre: updatedPoem.titre,
+        contenu: updatedPoem.contenu,
+        extrait: updatedPoem.extrait,
+        statut: dbStatut,
+        date_programmation: updatedPoem.dateProgrammation,
+        audio_url: updatedPoem.audioUrl,
+        illustration_url: updatedPoem.illustration
+      } as any);
+    } catch (err) {
+      console.warn('Erreur synchro mise à jour Supabase:', err);
+    }
   };
 
-  const handleDeletePoem = (id: string) => {
+  const handleDeletePoem = async (id: string) => {
+    // Suppression immédiate côté client React
     setPoems(prev => prev.filter(p => p.id !== id));
-    loadPoems();
+    // Suppression définitive dans la base Supabase
+    try {
+      await PoemesService.delete(id);
+    } catch (err) {
+      console.warn('Erreur suppression Supabase:', err);
+    }
   };
 
   const handlePreviewFromAdmin = (poem: Poem) => {
@@ -129,6 +165,7 @@ export function App() {
   };
 
   const handleAdminAuthSuccess = () => {
+    localStorage.setItem('signemv_admin_session', 'true');
     setIsAdminAuthenticated(true);
     setIsAdminAuthOpen(false);
     setActivePage('admin');
@@ -136,6 +173,7 @@ export function App() {
   };
 
   const handleAdminLogout = () => {
+    localStorage.removeItem('signemv_admin_session');
     setIsAdminAuthenticated(false);
     setActivePage('home');
     window.scrollTo({ top: 0, behavior: 'smooth' });
