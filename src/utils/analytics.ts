@@ -10,12 +10,14 @@ declare global {
   }
 }
 
+const DEFAULT_GA_ID = 'G-ZPKRY2JCTG';
+
 /**
  * Initializes Google Analytics 4 (GA4) dynamically.
  * Accepts a Measurement ID (e.g. G-XXXXXXXXXX) or reads VITE_GA_MEASUREMENT_ID from env.
  */
 export function initGoogleAnalytics(measurementId?: string): void {
-  const gaId = measurementId || import.meta.env.VITE_GA_MEASUREMENT_ID;
+  const gaId = measurementId || import.meta.env.VITE_GA_MEASUREMENT_ID || DEFAULT_GA_ID;
   if (!gaId || typeof window === 'undefined') return;
 
   // Prevent duplicate script loading
@@ -43,7 +45,7 @@ export function initGoogleAnalytics(measurementId?: string): void {
  */
 export function trackPageView(pagePath: string, pageTitle?: string): void {
   if (typeof window !== 'undefined' && window.gtag) {
-    const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+    const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID || DEFAULT_GA_ID;
     if (gaId) {
       window.gtag('config', gaId, {
         page_path: pagePath,
