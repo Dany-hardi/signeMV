@@ -3,6 +3,7 @@ import { Poem } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { Share2, Play, Pause, Bookmark, Heart, Check, Maximize2, Minimize2 } from 'lucide-react';
 import { LikesService, SignetsService, VisitesService, getLecteurToken } from '../services/db';
+import { buildPoemShareUrl } from '../utils/url';
 
 interface PaperReaderProps {
   poem: Poem;
@@ -69,7 +70,7 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
   };
 
   const handleShare = async () => {
-    const shareUrl = `${window.location.origin}/poemes/${poem.slug}`;
+    const shareUrl = buildPoemShareUrl(poem.slug);
     const shareData = {
       title: `${poem.titre} — MV Poésie`,
       text: poem.extrait,

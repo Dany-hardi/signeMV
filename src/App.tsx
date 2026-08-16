@@ -58,6 +58,18 @@ export function App() {
       if (dbPoemes && dbPoemes.length > 0) {
         const mapped = dbPoemes.map(mapPoemeToPoem);
         setPoems(mapped);
+
+        // Détection automatique d'un poème partagé via URL ?poeme=slug
+        const params = new URLSearchParams(window.location.search);
+        const targetSlug = params.get('poeme') || params.get('p');
+        if (targetSlug) {
+          const targetPoem = mapped.find(p => p.slug === targetSlug || p.id === targetSlug);
+          if (targetPoem) {
+            setSelectedPoem(targetPoem);
+            setActivePage('poem-detail');
+            return;
+          }
+        }
         setSelectedPoem(mapped[0]);
       }
     } catch (err) {

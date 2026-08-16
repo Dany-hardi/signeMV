@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Poem } from '../types';
 import { Logo } from './Logo';
 import { X, Share2, Check, ExternalLink } from 'lucide-react';
+import { getSiteBaseUrl } from '../utils/url';
 
 interface OpenGraphPreviewModalProps {
   poem: Poem;
@@ -47,13 +48,11 @@ export const OpenGraphPreviewModal: React.FC<OpenGraphPreviewModalProps> = ({ po
         <div className="relative aspect-[1200/630] w-full rounded-xl overflow-hidden shadow-lg border border-paper-border/80 dark:border-darkpaper-border bg-paper-bg p-8 sm:p-10 flex flex-col justify-between select-none">
           
           {/* Subtle grain texture overlay inside OG */}
-          <div className="absolute inset-0 bg-paper-grain opacity-60 pointer-events-none" />
-
           {/* Top Row: Monogram MV + Site Badge */}
           <div className="relative z-10 flex items-center justify-between">
             <Logo size="md" showText={true} />
-            <span className="text-[11px] font-sans font-medium tracking-widest uppercase text-paper-muted/80 bg-paper-card/80 px-3 py-1 rounded-full border border-paper-border/50">
-              mv-poesie.com
+            <span className="text-[11px] font-sans font-medium tracking-widest text-paper-muted/80 bg-paper-card/80 px-3 py-1 rounded-full border border-paper-border/50 font-mono">
+              {getSiteBaseUrl().replace(/^https?:\/\//, '')}
             </span>
           </div>
 
