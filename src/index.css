@@ -54,6 +54,15 @@
     border-right: 2px solid rgba(140, 90, 76, 0.4);
   }
 
+  /* Real Generated Image Scroll Liseuse */
+  .parchment-real-image {
+    background-image: url('/parchemin_antique.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 25px 40px rgba(35, 20, 10, 0.45));
+  }
+
   /* Paper Rollers (Rouleaux enroulés supérieurs & inférieurs) */
   .parchment-roller-head {
     background: linear-gradient(180deg, #D4AF79 0%, #EBD5AD 30%, #DFBF8C 70%, #B88E52 100%);
