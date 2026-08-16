@@ -151,14 +151,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     e.preventDefault();
     setAutoSaveStatus('saving');
 
-    const finalContenu = contenu.trim();
+    const finalContenu = contenu.replace(/(?:\s*|\n*)(?:—|-)*\s*MV\s*\.?$/gi, '').trim();
 
     const poemData: Poem = {
       id,
       titre,
       slug: slug || `poeme-${Date.now()}`,
       contenu: finalContenu,
-      extrait: extrait || finalContenu.replace('— MV', '').slice(0, 100).trim() + '...',
+      extrait: extrait || finalContenu.replace(/(?:\s*|\n*)(?:—|-)*\s*MV\s*\.?$/gi, '').slice(0, 100).trim() + '...',
       datePublication: statut === 'programmé' && dateProgrammation 
         ? new Date(dateProgrammation).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
         : datePublication,

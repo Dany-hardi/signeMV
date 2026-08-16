@@ -183,11 +183,6 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
             ❦
           </div>
 
-          {/* Monogramme MV filigrané d'époque gravé sur le papier */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[140px] sm:text-[200px] font-serif font-bold text-amber-950/[0.04] dark:text-amber-100/[0.03] pointer-events-none select-none">
-            MV
-          </div>
-
           {/* Contenu Poétique avec Apparition Progressif du Texte */}
           <div className="animate-text-unfurl relative z-10">
             
@@ -299,9 +294,9 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
               {t.publishedOn} {poem.datePublication}
             </p>
 
-            {/* Vers du Poème */}
+            {/* Vers du Poème (Sanitizing signature automatiques) */}
             <div className={`font-serif ${getFontSizeClass()} text-amber-950/95 dark:text-darkpaper-ink/95 whitespace-pre-wrap py-6 font-normal tracking-wide space-y-4 leading-relaxed`}>
-              {poem.contenu}
+              {(poem.contenu || '').replace(/(?:\s*|\n*)(?:—|-)*\s*MV\s*\.?$/gi, '').trim()}
             </div>
 
             {/* Barre d'Interactions Bas de Page */}
