@@ -17,6 +17,7 @@ interface PaperReaderProps {
 export const PaperReader: React.FC<PaperReaderProps> = ({
   poem,
   onOpenShareModal,
+  onOpenNewsletter: _onOpenNewsletter,
   onBookmarkToggle,
   onLikeToggle,
   isSavedInApp
@@ -141,240 +142,262 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
   return (
     <div className={isZenMode ? "fixed inset-0 z-50 overflow-y-auto bg-paper-grain p-4 sm:p-12 flex justify-center items-start animate-fade-in" : ""}>
       
-      {/* Conteneur Global du Rouleau de Parchemin Antique */}
-      <div className={`max-w-3xl mx-auto my-6 transition-all duration-500 ${isZenMode ? 'w-full max-w-4xl' : ''}`}>
+      {/* Conteneur Global du Rouleau de Parchemin Antique avec Animation de Déroulement */}
+      <div 
+        key={poem.id || poem.slug} 
+        className={`max-w-3xl mx-auto my-6 transition-all duration-500 origin-top animate-scroll-unroll ${isZenMode ? 'w-full max-w-4xl' : ''}`}
+      >
         
-        {/* Rouleau Supérieur en Bois Sculpté & Embouts Laiton */}
-        <div className="relative z-20 flex items-center justify-between px-2 -mb-2">
-          {/* Embout Laiton Gauche */}
-          <div className="w-6 sm:w-8 h-7 sm:h-9 rounded-l-full bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-700 shadow-md border-y border-amber-300/60 flex items-center justify-center">
-            <div className="w-1.5 h-full bg-amber-900/40 rounded-full" />
+        {/* Rouleau Supérieur Papier Enroulé (Top Roll) avec Spirales d'Enroulement */}
+        <div className="relative z-20 flex items-center justify-between h-10 sm:h-14 -mb-3">
+          
+          {/* Spirale d'Enroulement Gauche Top */}
+          <div className="w-10 sm:w-14 h-10 sm:h-14 rounded-full bg-gradient-to-br from-amber-700 via-amber-800 to-amber-950 border-2 border-amber-900 shadow-xl flex items-center justify-center relative overflow-hidden shrink-0">
+            <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 border-amber-600/60 bg-gradient-to-tr from-amber-900 to-amber-700 flex items-center justify-center">
+              <div className="w-2.5 h-2.5 rounded-full bg-amber-950 border border-amber-500/40" />
+            </div>
           </div>
 
-          {/* Rouleau Bois Principal Top */}
-          <div className="flex-1 h-6 sm:h-8 parchment-roller-top rounded-xs border-y border-amber-900/60 flex items-center justify-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-black/40 pointer-events-none" />
-            <div className="w-24 h-[1px] bg-amber-200/30 rounded-full" />
+          {/* Corps de Papier Enroulé Top */}
+          <div className="flex-1 h-8 sm:h-11 parchment-roller-head border-y-2 border-amber-900/60 flex items-center justify-center relative overflow-hidden rounded-xs shadow-lg mx-[-6px]">
+            <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-black/35 pointer-events-none" />
+            <div className="w-32 h-[1px] bg-amber-200/40 rounded-full" />
           </div>
 
-          {/* Embout Laiton Droit */}
-          <div className="w-6 sm:w-8 h-7 sm:h-9 rounded-r-full bg-gradient-to-l from-amber-600 via-yellow-500 to-amber-700 shadow-md border-y border-amber-300/60 flex items-center justify-center">
-            <div className="w-1.5 h-full bg-amber-900/40 rounded-full" />
+          {/* Spirale d'Enroulement Droite Top */}
+          <div className="w-10 sm:w-14 h-10 sm:h-14 rounded-full bg-gradient-to-bl from-amber-700 via-amber-800 to-amber-950 border-2 border-amber-900 shadow-xl flex items-center justify-center relative overflow-hidden shrink-0">
+            <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 border-amber-600/60 bg-gradient-to-tl from-amber-900 to-amber-700 flex items-center justify-center">
+              <div className="w-2.5 h-2.5 rounded-full bg-amber-950 border border-amber-500/40" />
+            </div>
           </div>
         </div>
 
-        {/* Corps de Parchemin Antique */}
-        <article className="parchment-scroll rounded-sm p-6 sm:p-12 md:p-16 relative shadow-2xl transition-all duration-500 border-t-2 border-b-2 border-amber-900/30">
+        {/* Corps du Parchemin Antique avec Encoches Frangées Découpées sur les Côtés */}
+        <article className="parchment-scroll p-6 sm:p-12 md:p-16 relative shadow-2xl transition-all duration-500 border-t-2 border-b-2 border-amber-900/40">
           
-          {/* Filigrane d'Encre & Ornementations des 4 Coins */}
-          <div className="absolute top-4 left-4 text-accent-terracotta/20 select-none pointer-events-none font-serif text-xl sm:text-2xl">
+          {/* Encoches Frangées / Découpures du Parchemin Antique (Gauche et Droit) */}
+          <div className="absolute top-12 -left-2 text-amber-900/30 font-serif text-sm select-none pointer-events-none">◀</div>
+          <div className="absolute top-1/3 -left-2 text-amber-900/30 font-serif text-sm select-none pointer-events-none">◀</div>
+          <div className="absolute top-2/3 -left-2 text-amber-900/30 font-serif text-sm select-none pointer-events-none">◀</div>
+          
+          <div className="absolute top-12 -right-2 text-amber-900/30 font-serif text-sm select-none pointer-events-none">▶</div>
+          <div className="absolute top-1/3 -right-2 text-amber-900/30 font-serif text-sm select-none pointer-events-none">▶</div>
+          <div className="absolute top-2/3 -right-2 text-amber-900/30 font-serif text-sm select-none pointer-events-none">▶</div>
+
+          {/* Ornementations d'Époque des 4 Coins */}
+          <div className="absolute top-4 left-4 text-amber-900/40 dark:text-amber-300/30 select-none pointer-events-none font-serif text-xl sm:text-2xl">
             ❦
           </div>
-          <div className="absolute top-4 right-4 text-accent-terracotta/20 select-none pointer-events-none font-serif text-xl sm:text-2xl">
+          <div className="absolute top-4 right-4 text-amber-900/40 dark:text-amber-300/30 select-none pointer-events-none font-serif text-xl sm:text-2xl">
             ❦
           </div>
-          <div className="absolute bottom-4 left-4 text-accent-terracotta/20 select-none pointer-events-none font-serif text-xl sm:text-2xl">
+          <div className="absolute bottom-4 left-4 text-amber-900/40 dark:text-amber-300/30 select-none pointer-events-none font-serif text-xl sm:text-2xl">
             ❦
           </div>
-          <div className="absolute bottom-4 right-4 text-accent-terracotta/20 select-none pointer-events-none font-serif text-xl sm:text-2xl">
+          <div className="absolute bottom-4 right-4 text-amber-900/40 dark:text-amber-300/30 select-none pointer-events-none font-serif text-xl sm:text-2xl">
             ❦
           </div>
 
           {/* Dynamic Background Monogram Watermark */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[140px] sm:text-[200px] font-serif font-bold text-accent-terracotta/[0.03] dark:text-amber-200/[0.03] pointer-events-none select-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[140px] sm:text-[200px] font-serif font-bold text-amber-950/[0.04] dark:text-amber-100/[0.03] pointer-events-none select-none">
             MV
           </div>
 
-          {/* Header Controls Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 pb-6 mb-8 border-b border-amber-900/20 dark:border-amber-500/20 text-xs relative z-10">
+          {/* Text Content with Progressive Unfurl Fade */}
+          <div className="animate-text-unfurl relative z-10">
             
-            {/* Collection & Time Tag */}
-            <div className="flex items-center gap-3">
-              <span className="px-3.5 py-1 rounded-full bg-amber-950/10 dark:bg-amber-100/10 text-accent-terracotta dark:text-amber-200 font-medium tracking-widest uppercase text-[10px] border border-amber-900/20">
-                {poem.theme}
-              </span>
-              <span className="text-paper-muted dark:text-darkpaper-muted font-serif italic text-xs">
-                {poem.readingTime} {t.readTime}
-              </span>
-            </div>
-
-            {/* Font Size & Utility Controls */}
-            <div className="flex items-center gap-2">
+            {/* Header Controls Bar */}
+            <div className="flex flex-wrap items-center justify-between gap-4 pb-6 mb-8 border-b border-amber-900/25 dark:border-amber-500/20 text-xs">
               
-              {/* Audio Player */}
-              {poem.audioUrl && (
-                <>
-                  <audio
-                    ref={audioRef}
-                    src={poem.audioUrl}
-                    onEnded={() => setIsPlaying(false)}
-                  />
-                  <button
-                    onClick={toggleAudio}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-all ${
-                      isPlaying
-                        ? 'bg-accent-terracotta text-white border-accent-terracotta shadow-xs'
-                        : 'bg-paper-card/80 dark:bg-darkpaper-card/80 text-paper-ink dark:text-darkpaper-ink border-amber-900/20 hover:border-accent-terracotta/40'
-                    }`}
-                    title={isPlaying ? "Mettre la lecture en pause" : t.listenAudio}
-                  >
-                    {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                    <span className="font-medium hidden sm:inline">
-                      {isPlaying ? 'Pause' : t.listenAudio}
-                    </span>
-                  </button>
-                </>
-              )}
-
-              {/* Font Size Selector */}
-              <div className="flex items-center bg-paper-card/60 dark:bg-darkpaper-card/60 p-0.5 rounded-full border border-amber-900/20">
-                <button
-                  onClick={() => setFontSize('sm')}
-                  className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
-                    fontSize === 'sm'
-                      ? 'bg-paper-ink text-paper-bg dark:bg-darkpaper-ink dark:text-darkpaper-bg'
-                      : 'text-paper-muted hover:text-paper-ink'
-                  }`}
-                  title={t.fontSmall}
-                >
-                  A-
-                </button>
-                <button
-                  onClick={() => setFontSize('md')}
-                  className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
-                    fontSize === 'md'
-                      ? 'bg-paper-ink text-paper-bg dark:bg-darkpaper-ink dark:text-darkpaper-bg'
-                      : 'text-paper-muted hover:text-paper-ink'
-                  }`}
-                  title={t.fontMedium}
-                >
-                  A
-                </button>
-                <button
-                  onClick={() => setFontSize('lg')}
-                  className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
-                    fontSize === 'lg'
-                      ? 'bg-paper-ink text-paper-bg dark:bg-darkpaper-ink dark:text-darkpaper-bg'
-                      : 'text-paper-muted hover:text-paper-ink'
-                  }`}
-                  title={t.fontLarge}
-                >
-                  A+
-                </button>
+              {/* Collection & Time Tag */}
+              <div className="flex items-center gap-3">
+                <span className="px-3.5 py-1 rounded-full bg-amber-950/10 dark:bg-amber-100/10 text-amber-900 dark:text-amber-200 font-medium tracking-widest uppercase text-[10px] border border-amber-900/20">
+                  {poem.theme}
+                </span>
+                <span className="text-amber-900/70 dark:text-darkpaper-muted font-serif italic text-xs">
+                  {poem.readingTime} {t.readTime}
+                </span>
               </div>
 
-              {/* Mode Intime / Zen Toggle */}
-              <button
-                onClick={() => setIsZenMode(prev => !prev)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-all ${
-                  isZenMode
-                    ? 'bg-accent-terracotta text-white border-accent-terracotta shadow-md'
-                    : 'bg-paper-card/60 dark:bg-darkpaper-card/60 text-paper-ink dark:text-darkpaper-ink border-amber-900/20 hover:border-accent-terracotta/40'
-                }`}
-                title={isZenMode ? "Quitter le mode intime" : "Mode Lecteur Intime (Plein Écran)"}
-              >
-                {isZenMode ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-                <span className="font-medium hidden sm:inline">
-                  {isZenMode ? "Quitter Zen" : "Mode Intime"}
-                </span>
-              </button>
+              {/* Font Size & Utility Controls */}
+              <div className="flex items-center gap-2">
+                
+                {/* Audio Player */}
+                {poem.audioUrl && (
+                  <>
+                    <audio
+                      ref={audioRef}
+                      src={poem.audioUrl}
+                      onEnded={() => setIsPlaying(false)}
+                    />
+                    <button
+                      onClick={toggleAudio}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-all ${
+                        isPlaying
+                          ? 'bg-amber-900 text-amber-50 border-amber-900 shadow-xs'
+                          : 'bg-amber-950/10 text-amber-950 dark:text-amber-100 border-amber-900/20 hover:border-amber-700/40'
+                      }`}
+                      title={isPlaying ? "Mettre la lecture en pause" : t.listenAudio}
+                    >
+                      {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                      <span className="font-medium hidden sm:inline">
+                        {isPlaying ? 'Pause' : t.listenAudio}
+                      </span>
+                    </button>
+                  </>
+                )}
 
+                {/* Font Size Selector */}
+                <div className="flex items-center bg-amber-950/10 dark:bg-darkpaper-card/60 p-0.5 rounded-full border border-amber-900/20">
+                  <button
+                    onClick={() => setFontSize('sm')}
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
+                      fontSize === 'sm'
+                        ? 'bg-amber-950 text-amber-50 dark:bg-darkpaper-ink dark:text-darkpaper-bg'
+                        : 'text-amber-900/70 dark:text-paper-muted hover:text-amber-950'
+                    }`}
+                    title={t.fontSmall}
+                  >
+                    A-
+                  </button>
+                  <button
+                    onClick={() => setFontSize('md')}
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
+                      fontSize === 'md'
+                        ? 'bg-amber-950 text-amber-50 dark:bg-darkpaper-ink dark:text-darkpaper-bg'
+                        : 'text-amber-900/70 dark:text-paper-muted hover:text-amber-950'
+                    }`}
+                    title={t.fontMedium}
+                  >
+                    A
+                  </button>
+                  <button
+                    onClick={() => setFontSize('lg')}
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
+                      fontSize === 'lg'
+                        ? 'bg-amber-950 text-amber-50 dark:bg-darkpaper-ink dark:text-darkpaper-bg'
+                        : 'text-amber-900/70 dark:text-paper-muted hover:text-amber-950'
+                    }`}
+                    title={t.fontLarge}
+                  >
+                    A+
+                  </button>
+                </div>
+
+                {/* Mode Intime / Zen Toggle */}
+                <button
+                  onClick={() => setIsZenMode(prev => !prev)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-all ${
+                    isZenMode
+                      ? 'bg-amber-900 text-white border-amber-900 shadow-md'
+                      : 'bg-amber-950/10 dark:bg-darkpaper-card/60 text-amber-950 dark:text-darkpaper-ink border-amber-900/20 hover:border-amber-700/40'
+                  }`}
+                  title={isZenMode ? "Quitter le mode intime" : "Mode Lecteur Intime (Plein Écran)"}
+                >
+                  {isZenMode ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                  <span className="font-medium hidden sm:inline">
+                    {isZenMode ? "Quitter Zen" : "Mode Intime"}
+                  </span>
+                </button>
+
+              </div>
             </div>
-          </div>
 
-          {/* Poem Content Area */}
-          <div className="space-y-6 relative z-10">
-            
-            {/* Title */}
-            <h1 className="font-serif text-3xl sm:text-5xl font-medium tracking-tight text-paper-ink dark:text-darkpaper-ink leading-tight text-center sm:text-left drop-shadow-xs">
+            {/* Poem Title */}
+            <h1 className="font-serif text-3xl sm:text-5xl font-medium tracking-tight text-amber-950 dark:text-darkpaper-ink leading-tight text-center sm:text-left drop-shadow-xs">
               {poem.titre}
             </h1>
 
             {/* Publication Date */}
-            <p className="text-xs font-sans text-paper-muted dark:text-darkpaper-muted uppercase tracking-widest text-center sm:text-left flex items-center gap-2">
-              <span className="inline-block w-4 h-[1px] bg-accent-terracotta/40" />
+            <p className="text-xs font-sans text-amber-900/70 dark:text-darkpaper-muted uppercase tracking-widest text-center sm:text-left flex items-center gap-2 mt-2">
+              <span className="inline-block w-4 h-[1px] bg-amber-900/40" />
               {t.publishedOn} {poem.datePublication}
             </p>
 
             {/* Strophes / Vers (Font-serif Cormorant Garamond) */}
-            <div className={`font-serif ${getFontSizeClass()} text-paper-ink/95 dark:text-darkpaper-ink/95 whitespace-pre-wrap py-6 font-normal tracking-wide space-y-4 leading-relaxed`}>
+            <div className={`font-serif ${getFontSizeClass()} text-amber-950/95 dark:text-darkpaper-ink/95 whitespace-pre-wrap py-6 font-normal tracking-wide space-y-4 leading-relaxed`}>
               {poem.contenu}
             </div>
 
-          </div>
-
-          {/* Footer Interactions Bar */}
-          <div className="pt-8 mt-8 border-t border-amber-900/20 dark:border-amber-500/20 flex flex-wrap items-center justify-between gap-4 relative z-10">
-            
-            <div className="flex items-center gap-2">
-              {/* Like Button */}
-              <button
-                onClick={handleLike}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-full border text-xs font-medium transition-all ${
-                  isLiked
-                    ? 'bg-rose-100/60 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-800 shadow-xs'
-                    : 'bg-paper-card/70 dark:bg-darkpaper-card/70 text-paper-ink dark:text-darkpaper-ink border-amber-900/20 hover:border-rose-300'
-                }`}
-              >
-                <Heart className={`w-4 h-4 ${isLiked ? 'fill-current text-rose-600' : ''}`} />
-                <span>{likesCount}</span>
-              </button>
-
-              {/* Bookmark Button */}
-              <button
-                onClick={handleBookmarkToggle}
-                className={`p-2.5 rounded-full border text-xs font-medium transition-all ${
-                  saved
-                    ? 'bg-amber-100/60 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-800 shadow-xs'
-                    : 'bg-paper-card/70 dark:bg-darkpaper-card/70 text-paper-ink dark:text-darkpaper-ink border-amber-900/20 hover:border-amber-400'
-                }`}
-                title={saved ? "Retirer des signets" : "Enregistrer dans mes signets"}
-              >
-                <Bookmark className={`w-4 h-4 ${saved ? 'fill-current text-amber-600' : ''}`} />
-              </button>
-            </div>
-
-            {/* Share Button */}
-            <div className="flex items-center gap-2">
-              {onOpenShareModal && (
+            {/* Footer Interactions Bar */}
+            <div className="pt-8 mt-8 border-t border-amber-900/25 dark:border-amber-500/20 flex flex-wrap items-center justify-between gap-4">
+              
+              <div className="flex items-center gap-2">
+                {/* Like Button */}
                 <button
-                  onClick={() => onOpenShareModal(poem)}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-accent-terracotta/10 text-accent-terracotta border border-accent-terracotta/30 text-xs font-medium hover:bg-accent-terracotta hover:text-white transition-all"
+                  onClick={handleLike}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full border text-xs font-medium transition-all ${
+                    isLiked
+                      ? 'bg-rose-100/70 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-800 shadow-xs'
+                      : 'bg-amber-950/10 dark:bg-darkpaper-card/70 text-amber-950 dark:text-darkpaper-ink border-amber-900/20 hover:border-rose-300'
+                  }`}
                 >
-                  <Feather className="w-3.5 h-3.5" />
-                  <span>Aperçu Reseaux</span>
+                  <Heart className={`w-4 h-4 ${isLiked ? 'fill-current text-rose-600' : ''}`} />
+                  <span>{likesCount}</span>
                 </button>
-              )}
 
-              <button
-                onClick={handleShare}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-paper-ink text-paper-bg dark:bg-darkpaper-ink dark:text-darkpaper-bg text-xs font-medium hover:opacity-90 transition-opacity"
-              >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
-                <span>{copied ? 'Lien copié !' : 'Partager'}</span>
-              </button>
+                {/* Bookmark Button */}
+                <button
+                  onClick={handleBookmarkToggle}
+                  className={`p-2.5 rounded-full border text-xs font-medium transition-all ${
+                    saved
+                      ? 'bg-amber-200/70 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border-amber-400 dark:border-amber-800 shadow-xs'
+                      : 'bg-amber-950/10 dark:bg-darkpaper-card/70 text-amber-950 dark:text-darkpaper-ink border-amber-900/20 hover:border-amber-400'
+                  }`}
+                  title={saved ? "Retirer des signets" : "Enregistrer dans mes signets"}
+                >
+                  <Bookmark className={`w-4 h-4 ${saved ? 'fill-current text-amber-700' : ''}`} />
+                </button>
+              </div>
+
+              {/* Share Button */}
+              <div className="flex items-center gap-2">
+                {onOpenShareModal && (
+                  <button
+                    onClick={() => onOpenShareModal(poem)}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-amber-900/10 text-amber-900 dark:text-amber-200 border border-amber-900/30 text-xs font-medium hover:bg-amber-900 hover:text-white transition-all"
+                  >
+                    <Feather className="w-3.5 h-3.5" />
+                    <span>Aperçu Reseaux</span>
+                  </button>
+                )}
+
+                <button
+                  onClick={handleShare}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-amber-950 text-amber-50 dark:bg-darkpaper-ink dark:text-darkpaper-bg text-xs font-medium hover:opacity-90 transition-opacity"
+                >
+                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
+                  <span>{copied ? 'Lien copié !' : 'Partager'}</span>
+                </button>
+              </div>
+
             </div>
 
           </div>
 
         </article>
 
-        {/* Rouleau Inférieur en Bois Sculpté & Embouts Laiton */}
-        <div className="relative z-20 flex items-center justify-between px-2 -mt-2">
-          {/* Embout Laiton Gauche */}
-          <div className="w-6 sm:w-8 h-7 sm:h-9 rounded-l-full bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-700 shadow-md border-y border-amber-300/60 flex items-center justify-center">
-            <div className="w-1.5 h-full bg-amber-900/40 rounded-full" />
+        {/* Rouleau Inférieur Papier Enroulé (Bottom Roll) avec Spirales d'Enroulement */}
+        <div className="relative z-20 flex items-center justify-between h-10 sm:h-14 -mt-3">
+          
+          {/* Spirale d'Enroulement Gauche Bottom */}
+          <div className="w-10 sm:w-14 h-10 sm:h-14 rounded-full bg-gradient-to-tr from-amber-700 via-amber-800 to-amber-950 border-2 border-amber-900 shadow-xl flex items-center justify-center relative overflow-hidden shrink-0">
+            <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 border-amber-600/60 bg-gradient-to-br from-amber-900 to-amber-700 flex items-center justify-center">
+              <div className="w-2.5 h-2.5 rounded-full bg-amber-950 border border-amber-500/40" />
+            </div>
           </div>
 
-          {/* Rouleau Bois Principal Bottom */}
-          <div className="flex-1 h-6 sm:h-8 parchment-roller-bottom rounded-xs border-y border-amber-900/60 flex items-center justify-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-black/40 pointer-events-none" />
-            <div className="w-24 h-[1px] bg-amber-200/30 rounded-full" />
+          {/* Corps de Papier Enroulé Bottom */}
+          <div className="flex-1 h-8 sm:h-11 parchment-roller-head border-y-2 border-amber-900/60 flex items-center justify-center relative overflow-hidden rounded-xs shadow-lg mx-[-6px]">
+            <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-black/35 pointer-events-none" />
+            <div className="w-32 h-[1px] bg-amber-200/40 rounded-full" />
           </div>
 
-          {/* Embout Laiton Droit */}
-          <div className="w-6 sm:w-8 h-7 sm:h-9 rounded-r-full bg-gradient-to-l from-amber-600 via-yellow-500 to-amber-700 shadow-md border-y border-amber-300/60 flex items-center justify-center">
-            <div className="w-1.5 h-full bg-amber-900/40 rounded-full" />
+          {/* Spirale d'Enroulement Droite Bottom */}
+          <div className="w-10 sm:w-14 h-10 sm:h-14 rounded-full bg-gradient-to-tl from-amber-700 via-amber-800 to-amber-950 border-2 border-amber-900 shadow-xl flex items-center justify-center relative overflow-hidden shrink-0">
+            <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 border-amber-600/60 bg-gradient-to-bl from-amber-900 to-amber-700 flex items-center justify-center">
+              <div className="w-2.5 h-2.5 rounded-full bg-amber-950 border border-amber-500/40" />
+            </div>
           </div>
         </div>
 
