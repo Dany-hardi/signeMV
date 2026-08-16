@@ -142,32 +142,64 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
   return (
     <div className={isZenMode ? "fixed inset-0 z-50 overflow-y-auto bg-paper-grain p-4 sm:p-12 flex justify-center items-start animate-fade-in" : ""}>
       
-      {/* Conteneur Global du Parchemin Antique avec Animation de Déroulement */}
+      {/* Conteneur Global de la Feuille de Parchemin Purement CSS avec Animation de Déroulement */}
       <div 
         key={poem.id || poem.slug} 
-        className={`max-w-3xl mx-auto my-4 transition-all duration-500 origin-top animate-scroll-unroll ${isZenMode ? 'w-full max-w-4xl' : ''}`}
+        className={`max-w-3xl mx-auto my-6 transition-all duration-500 origin-top animate-scroll-unroll ${isZenMode ? 'w-full max-w-4xl' : ''}`}
       >
         
-        {/* L'Image Parchemin Officielle EST la Liseuse Principale - Le Texte s'inscrit au centre du papier */}
-        <article className="parchment-real-image relative min-h-[720px] sm:min-h-[860px] pt-28 sm:pt-36 pb-28 sm:pb-36 px-16 sm:px-28 md:px-32 flex flex-col justify-between transition-all duration-500">
+        {/* Rouleau Supérieur CSS (Top Roller Handle) avec Spirale en Bois et Laiton */}
+        <div className="relative z-20 flex items-center justify-between h-9 sm:h-12 -mb-3 px-2">
+          {/* Spirale Gauche Top */}
+          <div className="w-8 sm:w-12 h-8 sm:h-12 rounded-full bg-gradient-to-br from-amber-800 via-amber-900 to-amber-950 border-2 border-amber-950 shadow-lg flex items-center justify-center shrink-0">
+            <div className="w-5 sm:w-7 h-5 sm:h-7 rounded-full border border-amber-600/50 bg-amber-900 flex items-center justify-center">
+              <div className="w-2 h-2 rounded-full bg-amber-950" />
+            </div>
+          </div>
+          {/* Axe du Rouleau Supérieur */}
+          <div className="flex-1 h-7 sm:h-9 parchment-roller-head border-y border-amber-900/60 rounded-xs shadow-md mx-[-4px]" />
+          {/* Spirale Droite Top */}
+          <div className="w-8 sm:w-12 h-8 sm:h-12 rounded-full bg-gradient-to-bl from-amber-800 via-amber-900 to-amber-950 border-2 border-amber-950 shadow-lg flex items-center justify-center shrink-0">
+            <div className="w-5 sm:w-7 h-5 sm:h-7 rounded-full border border-amber-600/50 bg-amber-900 flex items-center justify-center">
+              <div className="w-2 h-2 rounded-full bg-amber-950" />
+            </div>
+          </div>
+        </div>
+
+        {/* Corps de la Feuille de Parchemin en Pure CSS/JS */}
+        <article className="parchment-sheet p-6 sm:p-12 md:p-16 relative shadow-2xl transition-all duration-500">
           
+          {/* Ornements d'Époque aux 4 Coins */}
+          <div className="absolute top-4 left-4 text-amber-900/35 dark:text-amber-300/30 select-none pointer-events-none font-serif text-xl sm:text-2xl">
+            ❦
+          </div>
+          <div className="absolute top-4 right-4 text-amber-900/35 dark:text-amber-300/30 select-none pointer-events-none font-serif text-xl sm:text-2xl">
+            ❦
+          </div>
+          <div className="absolute bottom-4 left-4 text-amber-900/35 dark:text-amber-300/30 select-none pointer-events-none font-serif text-xl sm:text-2xl">
+            ❦
+          </div>
+          <div className="absolute bottom-4 right-4 text-amber-900/35 dark:text-amber-300/30 select-none pointer-events-none font-serif text-xl sm:text-2xl">
+            ❦
+          </div>
+
           {/* Monogramme MV filigrané d'époque gravé sur le papier */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[140px] sm:text-[200px] font-serif font-bold text-amber-950/[0.04] pointer-events-none select-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[140px] sm:text-[200px] font-serif font-bold text-amber-950/[0.04] dark:text-amber-100/[0.03] pointer-events-none select-none">
             MV
           </div>
 
-          {/* Contenu Poétique Gravé Directement sur le Parchemin */}
+          {/* Contenu Poétique avec Apparition Progressif du Texte */}
           <div className="animate-text-unfurl relative z-10">
             
             {/* En-tête & Barre de Contrôles */}
-            <div className="flex flex-wrap items-center justify-between gap-4 pb-6 mb-8 border-b border-amber-950/20 text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-4 pb-6 mb-8 border-b border-amber-950/15 dark:border-amber-500/20 text-xs">
               
               {/* Thème & Temps de Lecture */}
               <div className="flex items-center gap-3">
-                <span className="px-3.5 py-1 rounded-full bg-amber-950/10 text-amber-950 font-medium tracking-widest uppercase text-[10px] border border-amber-950/20">
+                <span className="px-3.5 py-1 rounded-full bg-amber-950/10 dark:bg-amber-100/10 text-amber-900 dark:text-amber-200 font-medium tracking-widest uppercase text-[10px] border border-amber-900/20">
                   {poem.theme}
                 </span>
-                <span className="text-amber-950/70 font-serif italic text-xs">
+                <span className="text-amber-900/70 dark:text-darkpaper-muted font-serif italic text-xs">
                   {poem.readingTime} {t.readTime}
                 </span>
               </div>
@@ -187,8 +219,8 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
                       onClick={toggleAudio}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-all ${
                         isPlaying
-                          ? 'bg-amber-950 text-amber-50 border-amber-950 shadow-xs'
-                          : 'bg-amber-950/10 text-amber-950 border-amber-950/20 hover:border-amber-950/40'
+                          ? 'bg-amber-900 text-amber-50 border-amber-900 shadow-xs'
+                          : 'bg-amber-950/10 dark:bg-darkpaper-card/60 text-amber-950 dark:text-darkpaper-ink border-amber-900/20 hover:border-amber-700/40'
                       }`}
                       title={isPlaying ? "Mettre la lecture en pause" : t.listenAudio}
                     >
@@ -201,13 +233,13 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
                 )}
 
                 {/* Sélecteur Taille de Police */}
-                <div className="flex items-center bg-amber-950/10 p-0.5 rounded-full border border-amber-950/20">
+                <div className="flex items-center bg-amber-950/10 dark:bg-darkpaper-card/60 p-0.5 rounded-full border border-amber-900/20">
                   <button
                     onClick={() => setFontSize('sm')}
                     className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
                       fontSize === 'sm'
-                        ? 'bg-amber-950 text-amber-50'
-                        : 'text-amber-950/70 hover:text-amber-950'
+                        ? 'bg-amber-950 text-amber-50 dark:bg-darkpaper-ink dark:text-darkpaper-bg'
+                        : 'text-amber-900/70 dark:text-paper-muted hover:text-amber-950'
                     }`}
                     title={t.fontSmall}
                   >
@@ -217,8 +249,8 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
                     onClick={() => setFontSize('md')}
                     className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
                       fontSize === 'md'
-                        ? 'bg-amber-950 text-amber-50'
-                        : 'text-amber-950/70 hover:text-amber-950'
+                        ? 'bg-amber-950 text-amber-50 dark:bg-darkpaper-ink dark:text-darkpaper-bg'
+                        : 'text-amber-900/70 dark:text-paper-muted hover:text-amber-950'
                     }`}
                     title={t.fontMedium}
                   >
@@ -228,8 +260,8 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
                     onClick={() => setFontSize('lg')}
                     className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all ${
                       fontSize === 'lg'
-                        ? 'bg-amber-950 text-amber-50'
-                        : 'text-amber-950/70 hover:text-amber-950'
+                        ? 'bg-amber-950 text-amber-50 dark:bg-darkpaper-ink dark:text-darkpaper-bg'
+                        : 'text-amber-900/70 dark:text-paper-muted hover:text-amber-950'
                     }`}
                     title={t.fontLarge}
                   >
@@ -242,8 +274,8 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
                   onClick={() => setIsZenMode(prev => !prev)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-all ${
                     isZenMode
-                      ? 'bg-amber-950 text-white border-amber-950 shadow-md'
-                      : 'bg-amber-950/10 text-amber-950 border-amber-950/20 hover:border-amber-950/40'
+                      ? 'bg-amber-900 text-white border-amber-900 shadow-md'
+                      : 'bg-amber-950/10 dark:bg-darkpaper-card/60 text-amber-950 dark:text-darkpaper-ink border-amber-900/20 hover:border-amber-700/40'
                   }`}
                   title={isZenMode ? "Quitter le mode intime" : "Mode Lecteur Intime (Plein Écran)"}
                 >
@@ -256,24 +288,24 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
               </div>
             </div>
 
-            {/* Titre du Poème Gravé */}
-            <h1 className="font-serif text-3xl sm:text-5xl font-semibold tracking-tight text-amber-950 leading-tight text-center sm:text-left drop-shadow-xs">
+            {/* Titre du Poème */}
+            <h1 className="font-serif text-3xl sm:text-5xl font-medium tracking-tight text-amber-950 dark:text-darkpaper-ink leading-tight text-center sm:text-left drop-shadow-xs">
               {poem.titre}
             </h1>
 
             {/* Date de Publication */}
-            <p className="text-xs font-sans text-amber-950/70 uppercase tracking-widest text-center sm:text-left flex items-center gap-2 mt-2">
-              <span className="inline-block w-4 h-[1px] bg-amber-950/40" />
+            <p className="text-xs font-sans text-amber-900/70 dark:text-darkpaper-muted uppercase tracking-widest text-center sm:text-left flex items-center gap-2 mt-2">
+              <span className="inline-block w-4 h-[1px] bg-amber-900/40" />
               {t.publishedOn} {poem.datePublication}
             </p>
 
-            {/* Vers du Poème gravés à l'encre ancienne directement sur la surface du parchemin */}
-            <div className={`font-serif ${getFontSizeClass()} text-amber-950 whitespace-pre-wrap py-6 font-medium tracking-wide space-y-4 leading-relaxed`}>
+            {/* Vers du Poème */}
+            <div className={`font-serif ${getFontSizeClass()} text-amber-950/95 dark:text-darkpaper-ink/95 whitespace-pre-wrap py-6 font-normal tracking-wide space-y-4 leading-relaxed`}>
               {poem.contenu}
             </div>
 
             {/* Barre d'Interactions Bas de Page */}
-            <div className="pt-8 mt-8 border-t border-amber-950/20 flex flex-wrap items-center justify-between gap-4">
+            <div className="pt-8 mt-8 border-t border-amber-950/15 dark:border-amber-500/20 flex flex-wrap items-center justify-between gap-4">
               
               <div className="flex items-center gap-2">
                 {/* Bouton J'aime */}
@@ -281,11 +313,11 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
                   onClick={handleLike}
                   className={`flex items-center gap-1.5 px-4 py-2 rounded-full border text-xs font-medium transition-all ${
                     isLiked
-                      ? 'bg-rose-950 text-rose-100 border-rose-950 shadow-xs'
-                      : 'bg-amber-950/10 text-amber-950 border-amber-950/20 hover:border-rose-800'
+                      ? 'bg-rose-100/70 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-800 shadow-xs'
+                      : 'bg-amber-950/10 dark:bg-darkpaper-card/70 text-amber-950 dark:text-darkpaper-ink border-amber-900/20 hover:border-rose-300'
                   }`}
                 >
-                  <Heart className={`w-4 h-4 ${isLiked ? 'fill-current text-rose-400' : ''}`} />
+                  <Heart className={`w-4 h-4 ${isLiked ? 'fill-current text-rose-600' : ''}`} />
                   <span>{likesCount}</span>
                 </button>
 
@@ -294,12 +326,12 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
                   onClick={handleBookmarkToggle}
                   className={`p-2.5 rounded-full border text-xs font-medium transition-all ${
                     saved
-                      ? 'bg-amber-950 text-amber-100 border-amber-950 shadow-xs'
-                      : 'bg-amber-950/10 text-amber-950 border-amber-950/20 hover:border-amber-950/40'
+                      ? 'bg-amber-200/70 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border-amber-400 dark:border-amber-800 shadow-xs'
+                      : 'bg-amber-950/10 dark:bg-darkpaper-card/70 text-amber-950 dark:text-darkpaper-ink border-amber-900/20 hover:border-amber-400'
                   }`}
                   title={saved ? "Retirer des signets" : "Enregistrer dans mes signets"}
                 >
-                  <Bookmark className={`w-4 h-4 ${saved ? 'fill-current text-amber-300' : ''}`} />
+                  <Bookmark className={`w-4 h-4 ${saved ? 'fill-current text-amber-700' : ''}`} />
                 </button>
               </div>
 
@@ -308,7 +340,7 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
                 {onOpenShareModal && (
                   <button
                     onClick={() => onOpenShareModal(poem)}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-amber-950/10 text-amber-950 border border-amber-950/30 text-xs font-medium hover:bg-amber-950 hover:text-white transition-all"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-amber-900/10 text-amber-900 dark:text-amber-200 border border-amber-900/30 text-xs font-medium hover:bg-amber-900 hover:text-white transition-all"
                   >
                     <Feather className="w-3.5 h-3.5" />
                     <span>Aperçu Reseaux</span>
@@ -317,7 +349,7 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
 
                 <button
                   onClick={handleShare}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-amber-950 text-amber-50 text-xs font-medium hover:opacity-90 transition-opacity"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-amber-950 text-amber-50 dark:bg-darkpaper-ink dark:text-darkpaper-bg text-xs font-medium hover:opacity-90 transition-opacity"
                 >
                   {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
                   <span>{copied ? 'Lien copié !' : 'Partager'}</span>
@@ -329,6 +361,24 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
           </div>
 
         </article>
+
+        {/* Rouleau Inférieur CSS (Bottom Roller Handle) avec Spirale en Bois et Laiton */}
+        <div className="relative z-20 flex items-center justify-between h-9 sm:h-12 -mt-3 px-2">
+          {/* Spirale Gauche Bottom */}
+          <div className="w-8 sm:w-12 h-8 sm:h-12 rounded-full bg-gradient-to-tr from-amber-800 via-amber-900 to-amber-950 border-2 border-amber-950 shadow-lg flex items-center justify-center shrink-0">
+            <div className="w-5 sm:w-7 h-5 sm:h-7 rounded-full border border-amber-600/50 bg-amber-900 flex items-center justify-center">
+              <div className="w-2 h-2 rounded-full bg-amber-950" />
+            </div>
+          </div>
+          {/* Axe du Rouleau Inférieur */}
+          <div className="flex-1 h-7 sm:h-9 parchment-roller-head border-y border-amber-900/60 rounded-xs shadow-md mx-[-4px]" />
+          {/* Spirale Droite Bottom */}
+          <div className="w-8 sm:w-12 h-8 sm:h-12 rounded-full bg-gradient-to-tl from-amber-800 via-amber-900 to-amber-950 border-2 border-amber-950 shadow-lg flex items-center justify-center shrink-0">
+            <div className="w-5 sm:w-7 h-5 sm:h-7 rounded-full border border-amber-600/50 bg-amber-900 flex items-center justify-center">
+              <div className="w-2 h-2 rounded-full bg-amber-950" />
+            </div>
+          </div>
+        </div>
 
       </div>
 
