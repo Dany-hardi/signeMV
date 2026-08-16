@@ -151,12 +151,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     e.preventDefault();
     setAutoSaveStatus('saving');
 
-    // Signature Textuelle MV Automatique lors de l'enregistrement
-    let finalContenu = contenu.trim();
-    if (finalContenu && !finalContenu.endsWith('— MV') && !finalContenu.endsWith('MV')) {
-      finalContenu = `${finalContenu}\n\n— MV`;
-      setContenu(finalContenu);
-    }
+    const finalContenu = contenu.trim();
 
     const poemData: Poem = {
       id,
