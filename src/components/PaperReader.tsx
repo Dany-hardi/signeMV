@@ -148,8 +148,8 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
         className={`max-w-3xl mx-auto my-4 transition-all duration-500 origin-top animate-scroll-unroll ${isZenMode ? 'w-full max-w-4xl' : ''}`}
       >
         
-        {/* L'Image Parchemin Antique EST la Liseuse Principale - Le Texte s'inscrit directement dessus */}
-        <article className="parchment-real-image relative min-h-[700px] sm:min-h-[820px] pt-28 sm:pt-36 pb-28 sm:pb-36 px-10 sm:px-20 md:px-24 flex flex-col justify-between transition-all duration-500">
+        {/* L'Image Parchemin Officielle EST la Liseuse Principale - Le Texte s'inscrit au centre du papier */}
+        <article className="parchment-real-image relative min-h-[720px] sm:min-h-[860px] pt-28 sm:pt-36 pb-28 sm:pb-36 px-16 sm:px-28 md:px-32 flex flex-col justify-between transition-all duration-500">
           
           {/* Monogramme MV filigrané d'époque gravé sur le papier */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[140px] sm:text-[200px] font-serif font-bold text-amber-950/[0.04] pointer-events-none select-none">
