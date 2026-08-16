@@ -148,42 +148,18 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
         className={`max-w-3xl mx-auto my-6 transition-all duration-500 origin-top animate-scroll-unroll ${isZenMode ? 'w-full max-w-4xl' : ''}`}
       >
         
-        {/* Rouleau Supérieur Papier Enroulé (Top Roll) avec Spirales d'Enroulement */}
-        <div className="relative z-20 flex items-center justify-between h-10 sm:h-14 -mb-3">
-          
-          {/* Spirale d'Enroulement Gauche Top */}
-          <div className="w-10 sm:w-14 h-10 sm:h-14 rounded-full bg-gradient-to-br from-amber-700 via-amber-800 to-amber-950 border-2 border-amber-900 shadow-xl flex items-center justify-center relative overflow-hidden shrink-0">
-            <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 border-amber-600/60 bg-gradient-to-tr from-amber-900 to-amber-700 flex items-center justify-center">
-              <div className="w-2.5 h-2.5 rounded-full bg-amber-950 border border-amber-500/40" />
-            </div>
-          </div>
-
-          {/* Corps de Papier Enroulé Top */}
-          <div className="flex-1 h-8 sm:h-11 parchment-roller-head border-y-2 border-amber-900/60 flex items-center justify-center relative overflow-hidden rounded-xs shadow-lg mx-[-6px]">
-            <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-black/35 pointer-events-none" />
-            <div className="w-32 h-[1px] bg-amber-200/40 rounded-full" />
-          </div>
-
-          {/* Spirale d'Enroulement Droite Top */}
-          <div className="w-10 sm:w-14 h-10 sm:h-14 rounded-full bg-gradient-to-bl from-amber-700 via-amber-800 to-amber-950 border-2 border-amber-900 shadow-xl flex items-center justify-center relative overflow-hidden shrink-0">
-            <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 border-amber-600/60 bg-gradient-to-tl from-amber-900 to-amber-700 flex items-center justify-center">
-              <div className="w-2.5 h-2.5 rounded-full bg-amber-950 border border-amber-500/40" />
-            </div>
-          </div>
+        {/* Rouleau Supérieur Réaliste avec l'Image Officielle Parchemin */}
+        <div className="relative z-20 overflow-hidden h-16 sm:h-24 -mb-4 drop-shadow-xl pointer-events-none select-none rounded-t-2xl">
+          <img 
+            src="/parchemin_antique.png" 
+            alt="Rouleau parchemin supérieur" 
+            className="w-full h-[240px] sm:h-[320px] object-cover object-top"
+          />
         </div>
 
-        {/* Corps du Parchemin Antique avec Encoches Frangées Découpées sur les Côtés */}
-        <article className="parchment-scroll p-6 sm:p-12 md:p-16 relative shadow-2xl transition-all duration-500 border-t-2 border-b-2 border-amber-900/40">
+        {/* Corps du Parchemin Antique dans lequel le texte s'intègre avec élégance */}
+        <article className="parchment-scroll p-6 sm:p-12 md:p-16 relative shadow-2xl transition-all duration-500 border-x-2 border-amber-900/40">
           
-          {/* Encoches Frangées / Découpures du Parchemin Antique (Gauche et Droit) */}
-          <div className="absolute top-12 -left-2 text-amber-900/30 font-serif text-sm select-none pointer-events-none">◀</div>
-          <div className="absolute top-1/3 -left-2 text-amber-900/30 font-serif text-sm select-none pointer-events-none">◀</div>
-          <div className="absolute top-2/3 -left-2 text-amber-900/30 font-serif text-sm select-none pointer-events-none">◀</div>
-          
-          <div className="absolute top-12 -right-2 text-amber-900/30 font-serif text-sm select-none pointer-events-none">▶</div>
-          <div className="absolute top-1/3 -right-2 text-amber-900/30 font-serif text-sm select-none pointer-events-none">▶</div>
-          <div className="absolute top-2/3 -right-2 text-amber-900/30 font-serif text-sm select-none pointer-events-none">▶</div>
-
           {/* Ornementations d'Époque des 4 Coins */}
           <div className="absolute top-4 left-4 text-amber-900/40 dark:text-amber-300/30 select-none pointer-events-none font-serif text-xl sm:text-2xl">
             ❦
@@ -198,18 +174,18 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
             ❦
           </div>
 
-          {/* Dynamic Background Monogram Watermark */}
+          {/* Monogramme Filigrané MV en fond de papier */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[140px] sm:text-[200px] font-serif font-bold text-amber-950/[0.04] dark:text-amber-100/[0.03] pointer-events-none select-none">
             MV
           </div>
 
-          {/* Text Content with Progressive Unfurl Fade */}
+          {/* Contenu Poétique avec Apparition Progressif du Texte */}
           <div className="animate-text-unfurl relative z-10">
             
-            {/* Header Controls Bar */}
+            {/* Barre de Contrôles & En-tête */}
             <div className="flex flex-wrap items-center justify-between gap-4 pb-6 mb-8 border-b border-amber-900/25 dark:border-amber-500/20 text-xs">
               
-              {/* Collection & Time Tag */}
+              {/* Thème & Temps de Lecture */}
               <div className="flex items-center gap-3">
                 <span className="px-3.5 py-1 rounded-full bg-amber-950/10 dark:bg-amber-100/10 text-amber-900 dark:text-amber-200 font-medium tracking-widest uppercase text-[10px] border border-amber-900/20">
                   {poem.theme}
@@ -219,10 +195,10 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
                 </span>
               </div>
 
-              {/* Font Size & Utility Controls */}
+              {/* Ajustement Taille Police & Mode Zen */}
               <div className="flex items-center gap-2">
                 
-                {/* Audio Player */}
+                {/* Lecteur Audio si disponible */}
                 {poem.audioUrl && (
                   <>
                     <audio
@@ -247,7 +223,7 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
                   </>
                 )}
 
-                {/* Font Size Selector */}
+                {/* Sélecteur Taille de Police */}
                 <div className="flex items-center bg-amber-950/10 dark:bg-darkpaper-card/60 p-0.5 rounded-full border border-amber-900/20">
                   <button
                     onClick={() => setFontSize('sm')}
@@ -284,7 +260,7 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
                   </button>
                 </div>
 
-                {/* Mode Intime / Zen Toggle */}
+                {/* Mode Intime / Zen */}
                 <button
                   onClick={() => setIsZenMode(prev => !prev)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-all ${
@@ -303,27 +279,27 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
               </div>
             </div>
 
-            {/* Poem Title */}
+            {/* Titre du Poème */}
             <h1 className="font-serif text-3xl sm:text-5xl font-medium tracking-tight text-amber-950 dark:text-darkpaper-ink leading-tight text-center sm:text-left drop-shadow-xs">
               {poem.titre}
             </h1>
 
-            {/* Publication Date */}
+            {/* Date de Publication */}
             <p className="text-xs font-sans text-amber-900/70 dark:text-darkpaper-muted uppercase tracking-widest text-center sm:text-left flex items-center gap-2 mt-2">
               <span className="inline-block w-4 h-[1px] bg-amber-900/40" />
               {t.publishedOn} {poem.datePublication}
             </p>
 
-            {/* Strophes / Vers (Font-serif Cormorant Garamond) */}
+            {/* Vers du Poème gravés sur le parchemin */}
             <div className={`font-serif ${getFontSizeClass()} text-amber-950/95 dark:text-darkpaper-ink/95 whitespace-pre-wrap py-6 font-normal tracking-wide space-y-4 leading-relaxed`}>
               {poem.contenu}
             </div>
 
-            {/* Footer Interactions Bar */}
+            {/* Barre d'Interactions Bas de Page */}
             <div className="pt-8 mt-8 border-t border-amber-900/25 dark:border-amber-500/20 flex flex-wrap items-center justify-between gap-4">
               
               <div className="flex items-center gap-2">
-                {/* Like Button */}
+                {/* Bouton J'aime */}
                 <button
                   onClick={handleLike}
                   className={`flex items-center gap-1.5 px-4 py-2 rounded-full border text-xs font-medium transition-all ${
@@ -336,7 +312,7 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
                   <span>{likesCount}</span>
                 </button>
 
-                {/* Bookmark Button */}
+                {/* Bouton Signets */}
                 <button
                   onClick={handleBookmarkToggle}
                   className={`p-2.5 rounded-full border text-xs font-medium transition-all ${
@@ -350,7 +326,7 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
                 </button>
               </div>
 
-              {/* Share Button */}
+              {/* Boutons Partage & Reseaux */}
               <div className="flex items-center gap-2">
                 {onOpenShareModal && (
                   <button
@@ -377,28 +353,13 @@ export const PaperReader: React.FC<PaperReaderProps> = ({
 
         </article>
 
-        {/* Rouleau Inférieur Papier Enroulé (Bottom Roll) avec Spirales d'Enroulement */}
-        <div className="relative z-20 flex items-center justify-between h-10 sm:h-14 -mt-3">
-          
-          {/* Spirale d'Enroulement Gauche Bottom */}
-          <div className="w-10 sm:w-14 h-10 sm:h-14 rounded-full bg-gradient-to-tr from-amber-700 via-amber-800 to-amber-950 border-2 border-amber-900 shadow-xl flex items-center justify-center relative overflow-hidden shrink-0">
-            <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 border-amber-600/60 bg-gradient-to-br from-amber-900 to-amber-700 flex items-center justify-center">
-              <div className="w-2.5 h-2.5 rounded-full bg-amber-950 border border-amber-500/40" />
-            </div>
-          </div>
-
-          {/* Corps de Papier Enroulé Bottom */}
-          <div className="flex-1 h-8 sm:h-11 parchment-roller-head border-y-2 border-amber-900/60 flex items-center justify-center relative overflow-hidden rounded-xs shadow-lg mx-[-6px]">
-            <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-black/35 pointer-events-none" />
-            <div className="w-32 h-[1px] bg-amber-200/40 rounded-full" />
-          </div>
-
-          {/* Spirale d'Enroulement Droite Bottom */}
-          <div className="w-10 sm:w-14 h-10 sm:h-14 rounded-full bg-gradient-to-tl from-amber-700 via-amber-800 to-amber-950 border-2 border-amber-900 shadow-xl flex items-center justify-center relative overflow-hidden shrink-0">
-            <div className="w-6 sm:w-8 h-6 sm:h-8 rounded-full border-2 border-amber-600/60 bg-gradient-to-bl from-amber-900 to-amber-700 flex items-center justify-center">
-              <div className="w-2.5 h-2.5 rounded-full bg-amber-950 border border-amber-500/40" />
-            </div>
-          </div>
+        {/* Rouleau Inférieur Réaliste avec l'Image Officielle Parchemin */}
+        <div className="relative z-20 overflow-hidden h-16 sm:h-24 -mt-4 drop-shadow-xl pointer-events-none select-none rounded-b-2xl">
+          <img 
+            src="/parchemin_antique.png" 
+            alt="Rouleau parchemin inférieur" 
+            className="w-full h-[240px] sm:h-[320px] object-cover object-bottom"
+          />
         </div>
 
       </div>
