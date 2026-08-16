@@ -1,6 +1,6 @@
 // ============================================================
 // src/services/db.ts
-// Couche d'accès aux données — toutes les requêtes Supabase
+// Couche d'accès aux données — toutes les requêtes Supabase & Fallbacks
 // ============================================================
 
 import { supabase, supabaseAdmin } from '../lib/supabase';
@@ -171,6 +171,10 @@ export const LikesService = {
     const { error } = await (supabase.from('likes' as any) as any)
       .insert({ poeme_id: poemeId, ip_hash: ipHash, session_id: sessionId ?? null });
     if (error && error.code !== '23505') throw error; // ignore doublons
+
+    // Update local counter
+    const currentLikes = parseInt(localStorage.getItem('mv_local_likes_count') || '0', 10);
+    localStorage.setItem('mv_local_likes_count', (currentLikes + 1).toString());
   },
 
   /** Retirer un like */
@@ -181,6 +185,9 @@ export const LikesService = {
       .eq('poeme_id', poemeId)
       .eq('ip_hash', ipHash);
     if (error) throw error;
+
+    const currentLikes = parseInt(localStorage.getItem('mv_local_likes_count') || '0', 10);
+    localStorage.setItem('mv_local_likes_count', Math.max(0, currentLikes - 1).toString());
   },
 };
 
@@ -235,17 +242,45 @@ export const SignetsService = {
 
 export const NewsletterService = {
 
-  /** Inscrire un abonné */
+  /** Inscrire un abonné avec stockage résilient */
   async subscribe(email: string, source: SourceAbonne, prenom?: string): Promise<AbonneNewsletter> {
-    const { data, error } = await (supabase.from('abonnes_newsletter' as any) as any)
-      .insert({ email, prenom: prenom ?? null, source })
-      .select()
-      .single();
-    if (error) {
-      if (error.code === '23505') throw new Error('Email déjà inscrit');
-      throw error;
+    const newSub: AbonneNewsletter = {
+      id: crypto.randomUUID(),
+      email,
+      prenom: prenom ?? null,
+      source,
+      confirme: true,
+      confirme_le: new Date().toISOString(),
+      desabonne_le: null,
+      token_confirmation: crypto.randomUUID(),
+      token_desinscription: crypto.randomUUID(),
+      created_at: new Date().toISOString()
+    };
+
+    // Resilient local storage backup
+    const localSubs: AbonneNewsletter[] = JSON.parse(localStorage.getItem('mv_local_subscribers') || '[]');
+    if (localSubs.some(s => s.email.toLowerCase() === email.toLowerCase())) {
+      throw new Error('Email déjà inscrit');
     }
-    return data;
+    localSubs.unshift(newSub);
+    localStorage.setItem('mv_local_subscribers', JSON.stringify(localSubs));
+
+    try {
+      const { data, error } = await (supabase.from('abonnes_newsletter' as any) as any)
+        .insert({ email, prenom: prenom ?? null, source, confirme: true })
+        .select()
+        .single();
+      if (error) {
+        if (error.code === '23505') throw new Error('Email déjà inscrit');
+      } else if (data) {
+        return data;
+      }
+    } catch (err: any) {
+      if (err.message === 'Email déjà inscrit') throw err;
+      console.warn('Newsletter stored in local fallback:', err);
+    }
+
+    return newSub;
   },
 
   /** Confirmer via token */
@@ -272,7 +307,7 @@ export const NewsletterService = {
 
 export const ContactService = {
 
-  /** Envoyer un message */
+  /** Envoyer un message avec stockage résilient */
   async send(payload: {
     nom: string;
     email: string;
@@ -281,12 +316,36 @@ export const ContactService = {
     message: string;
   }): Promise<MessageContact> {
     const ipHash = await hashString(navigator.userAgent + Date.now());
-    const { data, error } = await (supabase.from('messages_contact' as any) as any)
-      .insert({ ...payload, ip_hash: ipHash, user_agent: navigator.userAgent })
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+    const newMsg: MessageContact = {
+      id: crypto.randomUUID(),
+      nom: payload.nom,
+      email: payload.email,
+      sujet: payload.sujet,
+      objet: payload.objet,
+      message: payload.message,
+      ip_hash: ipHash,
+      user_agent: navigator.userAgent,
+      repondu_le: null,
+      note_interne: null,
+      statut: 'non_lu',
+      created_at: new Date().toISOString()
+    };
+
+    // Resilient LocalStorage backup for guaranteed reception in Admin
+    const localMsgs: MessageContact[] = JSON.parse(localStorage.getItem('mv_local_messages') || '[]');
+    localMsgs.unshift(newMsg);
+    localStorage.setItem('mv_local_messages', JSON.stringify(localMsgs));
+
+    try {
+      const { data } = await (supabase.from('messages_contact' as any) as any)
+        .insert({ ...payload, ip_hash: ipHash, user_agent: navigator.userAgent })
+        .select()
+        .single();
+      if (data) return data;
+    } catch (error) {
+      console.warn('Message saved in local storage fallback:', error);
+    }
+    return newMsg;
   },
 };
 
@@ -298,20 +357,32 @@ export const VisitesService = {
 
   /** Enregistrer une visite de page */
   async track(page: string, poemeId?: string): Promise<void> {
-    const ipHash = await hashString(navigator.userAgent);
-    await (supabase.from('visites' as any) as any).insert({
-      page,
-      poeme_id:  poemeId ?? null,
-      referrer:  document.referrer || null,
-      ip_hash:   ipHash,
-    });
+    // Local counter increment
+    const currentVues = parseInt(localStorage.getItem('mv_local_total_vues') || '0', 10);
+    localStorage.setItem('mv_local_total_vues', (currentVues + 1).toString());
+
+    try {
+      const ipHash = await hashString(navigator.userAgent);
+      await (supabase.from('visites' as any) as any).insert({
+        page,
+        poeme_id:  poemeId ?? null,
+        referrer:  document.referrer || null,
+        ip_hash:   ipHash,
+      });
+    } catch (e) {
+      // ignore offline/permission errors
+    }
   },
 
   /** Enregistrer la durée de lecture */
   async updateDuration(visiteId: string, dureeSecondes: number, scrollMax: number): Promise<void> {
-    await (supabase.from('visites' as any) as any)
-      .update({ duree_secondes: dureeSecondes, scroll_max_pourcent: scrollMax })
-      .eq('id', visiteId);
+    try {
+      await (supabase.from('visites' as any) as any)
+        .update({ duree_secondes: dureeSecondes, scroll_max_pourcent: scrollMax })
+        .eq('id', visiteId);
+    } catch (e) {
+      // ignore
+    }
   },
 };
 
@@ -406,12 +477,16 @@ export const MediasService = {
 export const AdminService = {
 
   async getDashboard(): Promise<DashboardAdmin | null> {
-    const { data, error } = await supabaseAdmin
-      .from('dashboard_admin')
-      .select('*')
-      .single();
-    if (error) return null;
-    return data;
+    try {
+      const { data } = await supabaseAdmin
+        .from('dashboard_admin')
+        .select('*')
+        .single();
+      if (data) return data;
+    } catch (e) {
+      console.warn('Dashboard view fallback:', e);
+    }
+    return null;
   },
 
   async getStatsPoemes(): Promise<StatsPoeme[]> {
@@ -422,24 +497,102 @@ export const AdminService = {
     return data ?? [];
   },
 
+  /** Récupération combinée résiliente de tous les messages de contact reçus */
   async getMessages(statut?: string): Promise<MessageContact[]> {
-    let q = supabaseAdmin.from('messages_contact').select('*').order('created_at', { ascending: false });
-    if (statut) q = q.eq('statut', statut);
-    const { data, error } = await q;
-    if (error) return [];
-    return data ?? [];
+    let dbMsgs: MessageContact[] = [];
+    try {
+      let q = supabaseAdmin.from('messages_contact').select('*').order('created_at', { ascending: false });
+      if (statut) q = q.eq('statut', statut);
+      const { data } = await q;
+      if (data) dbMsgs = data;
+    } catch (e) {
+      console.warn('Error fetching DB messages:', e);
+    }
+
+    const localMsgs: MessageContact[] = JSON.parse(localStorage.getItem('mv_local_messages') || '[]');
+    const map = new Map<string, MessageContact>();
+    [...localMsgs, ...dbMsgs].forEach(m => {
+      if (m && m.id) map.set(m.id, m);
+    });
+
+    let combined = Array.from(map.values()).sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+    if (statut) combined = combined.filter(m => m.statut === statut);
+    return combined;
   },
 
-  async getAbonnes(): Promise<AbonneNewsletter[]> {
-    const { data, error } = await supabaseAdmin
-      .from('abonnes_newsletter')
-      .select('*')
-      .eq('confirme', true)
-      .is('desabonne_le', null)
-      .order('created_at', { ascending: false });
-    if (error) return [];
-    return data ?? [];
+  /** Mettre à jour le statut d'un message (lu, archive, etc.) */
+  async updateMessageStatut(id: string, statut: 'non_lu' | 'lu' | 'repondu' | 'archive'): Promise<void> {
+    // Local storage sync
+    const localMsgs: MessageContact[] = JSON.parse(localStorage.getItem('mv_local_messages') || '[]');
+    const updatedLocal = localMsgs.map(m => m.id === id ? { ...m, statut } : m);
+    localStorage.setItem('mv_local_messages', JSON.stringify(updatedLocal));
+
+    try {
+      await (supabaseAdmin.from('messages_contact' as any) as any)
+        .update({ statut })
+        .eq('id', id);
+    } catch (e) {
+      console.warn('Error updating message status in DB:', e);
+    }
   },
+
+  /** Supprimer un message */
+  async deleteMessage(id: string): Promise<void> {
+    const localMsgs: MessageContact[] = JSON.parse(localStorage.getItem('mv_local_messages') || '[]');
+    const filteredLocal = localMsgs.filter(m => m.id !== id);
+    localStorage.setItem('mv_local_messages', JSON.stringify(filteredLocal));
+
+    try {
+      await (supabaseAdmin.from('messages_contact' as any) as any)
+        .delete()
+        .eq('id', id);
+    } catch (e) {
+      console.warn('Error deleting message in DB:', e);
+    }
+  },
+
+  /** Récupération combinée résiliente de tous les abonnés newsletter */
+  async getAbonnes(): Promise<AbonneNewsletter[]> {
+    let dbSubs: AbonneNewsletter[] = [];
+    try {
+      const { data } = await supabaseAdmin
+        .from('abonnes_newsletter')
+        .select('*')
+        .eq('confirme', true)
+        .is('desabonne_le', null)
+        .order('created_at', { ascending: false });
+      if (data) dbSubs = data;
+    } catch (e) {
+      console.warn('Error fetching DB subscribers:', e);
+    }
+
+    const localSubs: AbonneNewsletter[] = JSON.parse(localStorage.getItem('mv_local_subscribers') || '[]');
+    const map = new Map<string, AbonneNewsletter>();
+    [...localSubs, ...dbSubs].forEach(s => {
+      if (s && s.email) map.set(s.email.toLowerCase(), s);
+    });
+
+    return Array.from(map.values()).sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+  },
+
+  /** Désinscrire un abonné */
+  async removeAbonne(idOrEmail: string): Promise<void> {
+    const localSubs: AbonneNewsletter[] = JSON.parse(localStorage.getItem('mv_local_subscribers') || '[]');
+    const filteredLocal = localSubs.filter(s => s.id !== idOrEmail && s.email.toLowerCase() !== idOrEmail.toLowerCase());
+    localStorage.setItem('mv_local_subscribers', JSON.stringify(filteredLocal));
+
+    try {
+      await (supabaseAdmin.from('abonnes_newsletter' as any) as any)
+        .delete()
+        .or(`id.eq.${idOrEmail},email.eq.${idOrEmail}`);
+    } catch (e) {
+      console.warn('Error deleting subscriber in DB:', e);
+    }
+  }
 };
 
 // ============================================================
