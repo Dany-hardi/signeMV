@@ -8,7 +8,7 @@ import {
   PenTool, Plus, Save, Trash2, CheckCircle2, RefreshCw, 
   Eye, Mail, Users, BarChart3, Search, AlertTriangle, FileText,
   Check, Inbox, LogOut, Sparkles, ToggleLeft, ToggleRight,
-  Calendar, Lock, KeyRound, ShieldCheck
+  Calendar, Lock, KeyRound, ShieldCheck, Send, Copy, Download
 } from 'lucide-react';
 
 interface AdminDashboardProps {
@@ -57,6 +57,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordStatus, setPasswordStatus] = useState<{ type: 'success' | 'error' | null; message: string }>({ type: null, message: '' });
+  
+  // Newsletter Dispatcher State
+  const [newsletterSubject, setNewsletterSubject] = useState('');
+  const [newsletterBody, setNewsletterBody] = useState('');
+  const [newsletterAttachedPoemId, setNewsletterAttachedPoemId] = useState<string>('');
+  const [newsletterSearchFilter, setNewsletterSearchFilter] = useState('');
+  const [copiedEmails, setCopiedEmails] = useState(false);
+  const [copiedBody, setCopiedBody] = useState(false);
+  const [sentNewslettersHistory, setSentNewslettersHistory] = useState<any[]>(() => {
+    return JSON.parse(localStorage.getItem('mv_sent_newsletters') || '[]');
+  });
   
   // Statuses
   const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'saving' | 'dirty'>('saved');
@@ -199,6 +210,75 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleNewPoem = () => {
     setIsEditingNew(true);
     setSelectedPoemId(null);
+  };
+
+  // Newsletter Dispatcher Handlers
+  const handleSelectPoemForNewsletter = (poemId: string) => {
+    setNewsletterAttachedPoemId(poemId);
+    if (!poemId) return;
+    const poem = poems.find(p => p.id === poemId);
+    if (poem) {
+      const siteUrl = window.location.origin;
+      const poemUrl = `${siteUrl}/?poeme=${poem.slug}`;
+      const intro = `Chers correspondants,\n\nJ'ai le plaisir de partager avec vous une nouvelle œuvre intime :\n\n« ${poem.titre} »\n\n"${poem.extrait}"\n\nDécouvrir et lire le poème complet sur le parchemin :\n${poemUrl}\n\nAvec toute ma sensibilité,\nMV`;
+      setNewsletterBody(intro);
+      if (!newsletterSubject) {
+        setNewsletterSubject(`Lettre du Silence — « ${poem.titre} »`);
+      }
+    }
+  };
+
+  const handleCopyBccEmails = () => {
+    if (abonnes.length === 0) return;
+    const emailList = abonnes.map(a => a.email).join(', ');
+    navigator.clipboard.writeText(emailList);
+    setCopiedEmails(true);
+    setTimeout(() => setCopiedEmails(false), 3000);
+  };
+
+  const handleExportSubscribersCSV = () => {
+    if (abonnes.length === 0) return;
+    const headers = "Email,Prenom,Source,DateInscription\n";
+    const rows = abonnes.map(a => `"${a.email}","${a.prenom || ''}","${a.source}","${new Date(a.created_at).toLocaleDateString('fr-FR')}"`).join("\n");
+    const blob = new Blob([headers + rows], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `signemv_abonnes_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleCopyNewsletterBody = () => {
+    if (!newsletterBody.trim()) return;
+    navigator.clipboard.writeText(newsletterBody);
+    setCopiedBody(true);
+    setTimeout(() => setCopiedBody(false), 3000);
+  };
+
+  const handleSendMailtoNewsletter = () => {
+    if (!newsletterSubject.trim() || !newsletterBody.trim()) {
+      alert("Veuillez renseigner le sujet et le corps de la lettre.");
+      return;
+    }
+    const bccEmails = abonnes.map(a => a.email).join(',');
+    const mailtoUrl = `mailto:?bcc=${encodeURIComponent(bccEmails)}&subject=${encodeURIComponent(newsletterSubject)}&body=${encodeURIComponent(newsletterBody)}`;
+    
+    // Enregistrer dans l'historique local & Supabase
+    const newEntry = {
+      id: crypto.randomUUID(),
+      subject: newsletterSubject,
+      body: newsletterBody,
+      recipientsCount: abonnes.length,
+      sentAt: new Date().toISOString(),
+      attachedPoemId: newsletterAttachedPoemId
+    };
+    const updatedHistory = [newEntry, ...sentNewslettersHistory];
+    setSentNewslettersHistory(updatedHistory);
+    localStorage.setItem('mv_sent_newsletters', JSON.stringify(updatedHistory));
+
+    window.open(mailtoUrl, '_blank');
   };
 
   // Handlers pour la gestion des cartes Oracle par la poétesse
@@ -756,53 +836,204 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
       )}
 
-      {/* TAB 3: NEWSLETTERS */}
+      {/* TAB 3: NEWSLETTERS & STUDIO DE DIFFUSION */}
       {activeTab === 'newsletters' && (
-        <div className="bg-paper-card dark:bg-darkpaper-card border border-paper-border dark:border-darkpaper-border rounded-2xl p-6 shadow-sm space-y-6">
-          <div className="flex items-center justify-between border-b border-paper-border/60 pb-4">
-            <div>
-              <h2 className="font-serif text-lg font-medium text-paper-ink dark:text-darkpaper-ink">
-                Abonnés aux Lettres du Silence
-              </h2>
-              <p className="text-xs text-paper-muted dark:text-darkpaper-muted">
-                Liste des correspondants ayant souscrit à vos lettres mensuelles.
-              </p>
+        <div className="space-y-6">
+          
+          {/* Studio de Rédaction & Diffusion */}
+          <div className="bg-paper-card dark:bg-darkpaper-card border border-paper-border dark:border-darkpaper-border rounded-2xl p-6 shadow-sm space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-paper-border/60 pb-4">
+              <div>
+                <h2 className="font-serif text-lg font-medium text-paper-ink dark:text-darkpaper-ink flex items-center gap-2">
+                  <Send className="w-5 h-5 text-accent-terracotta" />
+                  Studio de Rédaction & Diffusion — Lettres du Silence
+                </h2>
+                <p className="text-xs text-paper-muted dark:text-darkpaper-muted">
+                  Composez et adressez vos lettres poétiques à tous les correspondants inscrits.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleCopyBccEmails}
+                  disabled={abonnes.length === 0}
+                  className="px-3 py-1.5 rounded-lg bg-paper-bg dark:bg-darkpaper-bg border border-paper-border text-paper-ink dark:text-darkpaper-ink text-xs font-medium hover:border-accent-terracotta/40 transition-all flex items-center gap-1.5 disabled:opacity-50"
+                  title="Copier toutes les adresses email au format Bcc"
+                >
+                  {copiedEmails ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-accent-terracotta" />}
+                  {copiedEmails ? 'Emails Copiés !' : 'Copier emails (Bcc)'}
+                </button>
+
+                <button
+                  onClick={handleExportSubscribersCSV}
+                  disabled={abonnes.length === 0}
+                  className="px-3 py-1.5 rounded-lg bg-paper-bg dark:bg-darkpaper-bg border border-paper-border text-paper-ink dark:text-darkpaper-ink text-xs font-medium hover:border-accent-terracotta/40 transition-all flex items-center gap-1.5 disabled:opacity-50"
+                  title="Exporter la liste des abonnés au format CSV"
+                >
+                  <Download className="w-3.5 h-3.5 text-accent-sage" />
+                  Exporter CSV
+                </button>
+              </div>
             </div>
-            <span className="px-3 py-1 rounded-full bg-accent-terracotta/15 text-accent-terracotta text-xs font-semibold">
-              {abonnes.length} Abonné(s)
-            </span>
+
+            {/* Formulaire de Composition */}
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-paper-muted mb-1">
+                    Sujet / Objet de la Lettre
+                  </label>
+                  <input
+                    type="text"
+                    value={newsletterSubject}
+                    onChange={(e) => setNewsletterSubject(e.target.value)}
+                    placeholder="ex: Lettre du Silence n°4 — Les heures feutrées"
+                    className="w-full bg-paper-bg dark:bg-darkpaper-bg border border-paper-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent-terracotta transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-paper-muted mb-1">
+                    Joindre un Poème Publié (Optionnel)
+                  </label>
+                  <select
+                    value={newsletterAttachedPoemId}
+                    onChange={(e) => handleSelectPoemForNewsletter(e.target.value)}
+                    className="w-full bg-paper-bg dark:bg-darkpaper-bg border border-paper-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent-terracotta transition-all"
+                  >
+                    <option value="">-- Choisir un poème --</option>
+                    {poems.filter(p => p.statut === 'publié').map(p => (
+                      <option key={p.id} value={p.id}>{p.titre} ({p.theme})</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-paper-muted mb-1">
+                  Corps de la Lettre du Silence
+                </label>
+                <textarea
+                  value={newsletterBody}
+                  onChange={(e) => setNewsletterBody(e.target.value)}
+                  rows={7}
+                  placeholder="Écrivez le message destiné à vos lecteurs..."
+                  className="w-full bg-paper-bg dark:bg-darkpaper-bg border border-paper-border rounded-xl p-4 text-sm font-serif leading-relaxed focus:outline-none focus:border-accent-terracotta transition-all"
+                />
+              </div>
+
+              {/* Actions de Diffusion */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <button
+                  onClick={handleCopyNewsletterBody}
+                  disabled={!newsletterBody.trim()}
+                  className="px-4 py-2 rounded-xl bg-paper-bg dark:bg-darkpaper-bg border border-paper-border text-paper-ink text-xs font-medium hover:border-accent-terracotta transition-all flex items-center gap-2 disabled:opacity-50"
+                >
+                  {copiedBody ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-paper-muted" />}
+                  {copiedBody ? 'Texte Copié !' : 'Copier le Texte de la Lettre'}
+                </button>
+
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={handleSendMailtoNewsletter}
+                    disabled={!newsletterSubject.trim() || !newsletterBody.trim() || abonnes.length === 0}
+                    className="px-5 py-2.5 rounded-xl bg-accent-terracotta hover:bg-accent-terracotta/90 text-white text-xs font-medium transition-all shadow-xs flex items-center gap-2 disabled:opacity-50"
+                  >
+                    <Mail className="w-4 h-4" />
+                    Diffuser aux {abonnes.length} Abonné(s) (via Client Mail)
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-paper-border/60 text-paper-muted font-sans uppercase tracking-wider text-[10px]">
-                  <th className="py-3 px-3">Email</th>
-                  <th className="py-3 px-3">Prénom</th>
-                  <th className="py-3 px-3">Source</th>
-                  <th className="py-3 px-3">Date d'inscription</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-paper-border/40 font-sans">
-                {abonnes.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="py-8 text-center text-paper-muted italic">
-                      Aucun abonné enregistré pour le moment.
-                    </td>
+          {/* Liste & Gestion des Abonnés */}
+          <div className="bg-paper-card dark:bg-darkpaper-card border border-paper-border dark:border-darkpaper-border rounded-2xl p-6 shadow-sm space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-paper-border/60 pb-4">
+              <div>
+                <h3 className="font-serif text-base font-semibold text-paper-ink dark:text-darkpaper-ink flex items-center gap-2">
+                  <Users className="w-4 h-4 text-accent-sage" />
+                  Liste des Correspondants Inscrits
+                </h3>
+                <p className="text-xs text-paper-muted">
+                  Recherchez et consultez les inscrits à la newsletter.
+                </p>
+              </div>
+
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-paper-muted" />
+                <input
+                  type="text"
+                  value={newsletterSearchFilter}
+                  onChange={(e) => setNewsletterSearchFilter(e.target.value)}
+                  placeholder="Rechercher par email..."
+                  className="bg-paper-bg dark:bg-darkpaper-bg border border-paper-border rounded-full pl-8 pr-4 py-1.5 text-xs focus:outline-none focus:border-accent-terracotta w-60"
+                />
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-paper-border/60 text-paper-muted font-sans uppercase tracking-wider text-[10px]">
+                    <th className="py-3 px-3">Email</th>
+                    <th className="py-3 px-3">Prénom</th>
+                    <th className="py-3 px-3">Source</th>
+                    <th className="py-3 px-3">Date d'inscription</th>
                   </tr>
-                ) : (
-                  abonnes.map(abo => (
-                    <tr key={abo.id} className="hover:bg-paper-bg/50 dark:hover:bg-darkpaper-bg/50">
-                      <td className="py-3 px-3 font-medium text-paper-ink dark:text-darkpaper-ink">{abo.email}</td>
-                      <td className="py-3 px-3 text-paper-muted">{abo.prenom || '—'}</td>
-                      <td className="py-3 px-3"><span className="bg-paper-bg border border-paper-border/60 px-2 py-0.5 rounded text-[10px]">{abo.source}</span></td>
-                      <td className="py-3 px-3 text-paper-muted">{new Date(abo.created_at).toLocaleDateString('fr-FR')}</td>
+                </thead>
+                <tbody className="divide-y divide-paper-border/40 font-sans">
+                  {abonnes.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="py-8 text-center text-paper-muted italic">
+                        Aucun abonné enregistré pour le moment.
+                      </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    abonnes
+                      .filter(a => !newsletterSearchFilter || a.email.toLowerCase().includes(newsletterSearchFilter.toLowerCase()))
+                      .map(abo => (
+                        <tr key={abo.id} className="hover:bg-paper-bg/50 dark:hover:bg-darkpaper-bg/50">
+                          <td className="py-3 px-3 font-medium text-paper-ink dark:text-darkpaper-ink">{abo.email}</td>
+                          <td className="py-3 px-3 text-paper-muted">{abo.prenom || '—'}</td>
+                          <td className="py-3 px-3"><span className="bg-paper-bg border border-paper-border/60 px-2 py-0.5 rounded text-[10px]">{abo.source}</span></td>
+                          <td className="py-3 px-3 text-paper-muted">{new Date(abo.created_at).toLocaleDateString('fr-FR')}</td>
+                        </tr>
+                      ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
+
+          {/* Historique des Lettres Envoyées */}
+          {sentNewslettersHistory.length > 0 && (
+            <div className="bg-paper-card dark:bg-darkpaper-card border border-paper-border dark:border-darkpaper-border rounded-2xl p-6 shadow-sm space-y-4">
+              <h3 className="font-serif text-base font-semibold text-paper-ink dark:text-darkpaper-ink flex items-center gap-2">
+                <FileText className="w-4 h-4 text-accent-terracotta" />
+                Historique des Lettres Diffusées
+              </h3>
+
+              <div className="space-y-3">
+                {sentNewslettersHistory.map(item => (
+                  <div key={item.id} className="p-4 rounded-xl border border-paper-border/60 bg-paper-bg dark:bg-darkpaper-bg space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-serif font-semibold text-paper-ink dark:text-darkpaper-ink text-sm">
+                        {item.subject}
+                      </span>
+                      <span className="text-paper-muted">
+                        Diffusé le {new Date(item.sentAt).toLocaleDateString('fr-FR')} à {item.recipientsCount} destinataire(s)
+                      </span>
+                    </div>
+                    <p className="text-xs text-paper-muted font-serif line-clamp-2 italic">
+                      "{item.body}"
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
         </div>
       )}
 
